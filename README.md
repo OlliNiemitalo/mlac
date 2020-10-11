@@ -22,4 +22,5 @@ sudo apt-get install -y libsoundio-dev
 Compilation
 -----------
 make unittest
+
 ./unittest
