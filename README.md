@@ -15,11 +15,12 @@ For compiling and running tests that require file input/output, install libsndfi
 
     sudo apt-get install -y libsndfile-dev
 
-For compiling and running tests that require sound output, install libsoundio:
-
-    sudo apt-get install -y libsoundio-dev
-
 Compilation
 -----------
+
+Compile and run unit tests:
+
     make unittest
     ./unittest
+
+See `makefile` for other things you can make. To use the Molo codec in your own program, either include the C++ core `src/molo-core.hpp` or, for a C program, make `libmolo-encoder.o` and `libmolo-decoder.o` and use those using C include files `src/libmolo-decoder.h` and `src/libmolo-encoder.h`.
