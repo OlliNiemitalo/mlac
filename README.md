@@ -22,5 +22,4 @@ For compiling and running tests that require sound output, install libsoundio:
 Compilation
 -----------
     make unittest
-
     ./unittest
