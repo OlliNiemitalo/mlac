@@ -1,5 +1,5 @@
-Molo, a fast and mostly lossless audio codec.
----------------------------------------------
+Molo, a mostly lossless audio codec.
+------------------------------------
 Copyright 2020 Olli Niemitalo (o@iki.fi). Licensed under Creative Commons Attribution 4.0 International. See License. There is no warranty.
 
 This is work in progress.
