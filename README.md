@@ -13,14 +13,14 @@ Prerequisities
 
 For compiling and running tests that require file input/output, install libsndfile:
 
-sudo apt-get install -y libsndfile-dev
+    sudo apt-get install -y libsndfile-dev
 
 For compiling and running tests that require sound output, install libsoundio:
 
-sudo apt-get install -y libsoundio-dev
+    sudo apt-get install -y libsoundio-dev
 
 Compilation
 -----------
-make unittest
+    make unittest
 
-./unittest
+    ./unittest
