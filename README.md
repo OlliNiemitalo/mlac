@@ -6,7 +6,7 @@ This is work in progress.
 
 16-bit stereo audio encoding and decoding works.
 
-The lossless mode gives almost FLAC-like compression for difficult material. The lossy mode could still be improved, and there is no stream handling yet.
+The lossless mode gives almost FLAC-like compression for difficult material, and is faster both in encoding and decoding. The packet size is suitable for Bluetooth Low Energy audio applications. The lossy mode could still be improved, and there is no stream handling yet.
 
 Prerequisities
 --------------
