@@ -2,7 +2,7 @@ MLAC, a mostly lossless audio codec
 -----------------------------------
 Copyright 2020 Olli Niemitalo (o@iki.fi). Licensed under Creative Commons Attribution 4.0 International. See License. There is no warranty.
 
-This is work in progress.
+This is work in progress. The MLAC format is not yet frozen, so audio encoded using one version will probably not be decoded properly using another version.
 
 16-bit stereo audio encoding and decoding works.
 
