@@ -1,4 +1,4 @@
-// Calculate Molo compression statistics of 192 stereo sample blocks
+// Calculate MLAC compression statistics of 192 stereo sample blocks
 //
 // Copyright Olli Niemitalo (o@iki.fi)
 //
@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <sndfile.h>
 #include <stdint.h>
-#include "molo-core.hpp"
+#include "mlac-core.hpp"
 
 int main (int argc, char *argv[]) {
   if (argc < 2) {
@@ -37,20 +37,20 @@ int main (int argc, char *argv[]) {
   sf_close(sndFile);
   const int maxNumCompressedBytes = 244;
   uint8_t outBuf[maxNumCompressedBytes];
-  MoloEncoder moloEncoder;
-  MoloDecoder moloDecoder;
+  MLACEncoder mlacEncoder;
+  MLACDecoder mlacDecoder;
 
   double mean = 0;
   int meanCount = 0;
-  int16_t compareBuf[2*MOLO_BLOCK_MAX_NUM_SAMPLETUPLES];
+  int16_t compareBuf[2*MLAC_BLOCK_MAX_NUM_SAMPLETUPLES];
   for (long int i = 0; i < sfInfo.frames - 192; i += 192) {
       int numSampleTuplesWritten;
       int numBitsWritten;
-      moloEncoder.encode((int16_t *)&inBuf[i*2], outBuf, i & 255, numSampleTuplesWritten, numBitsWritten);
+      mlacEncoder.encode((int16_t *)&inBuf[i*2], outBuf, i & 255, numSampleTuplesWritten, numBitsWritten);
       printf("%ld,%d\n",i,numSampleTuplesWritten);
       uint8_t compareTimeStamp;
       int compareNumSampleTuples;
-      moloDecoder.decode(outBuf, compareBuf, compareTimeStamp, compareNumSampleTuples);
+      mlacDecoder.decode(outBuf, compareBuf, compareTimeStamp, compareNumSampleTuples);
       if (numSampleTuplesWritten != compareNumSampleTuples) {
 	printf("numSampleTuples DIFFER %d %d\n", numSampleTuplesWritten, compareNumSampleTuples);
       }

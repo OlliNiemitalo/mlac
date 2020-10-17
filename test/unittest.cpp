@@ -1,4 +1,4 @@
-// Unit tests for molo-core.hpp
+// Unit tests for mlac-core.hpp
 //
 // Copyright 2020 Olli Niemitalo (o@iki.fi)
 //
@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <time.h>
 
-#include "molo-core.hpp"
+#include "mlac-core.hpp"
 
 // Unit tests, uncomment to enable
 #define UNITTEST_BITDEPTH_16
@@ -44,7 +44,7 @@ static void printb(uint32_t val, int numBits) {
   }
 }
 
-// This is a function that is not currently needed by codec (so moved out of molo-core.hpp) but we test it also
+// This is a function that is not currently needed by codec (so moved out of mlac-core.hpp) but we test it also
 static int totalExpGolombLikeNumBits16(int *bitDepthCounts, int expGolombLikeParameter) {
   int numBits = 0;
   for (int i = 0; i < 17-RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER; i++) {
@@ -363,10 +363,10 @@ int main() {
   printPass(pass);
 #endif
 #ifdef UNITTEST_LOSSLESS_TRANSCODE
-  printf("UNITTEST_LOSSLESS_TRANSCODE: MoloEncoder.encode, MoloDecoder.decode\n");
+  printf("UNITTEST_LOSSLESS_TRANSCODE: MLACEncoder.encode, MLACDecoder.decode\n");
   pass = true;
-  MoloEncoder encoder;
-  MoloDecoder decoder;
+  MLACEncoder encoder;
+  MLACDecoder decoder;
   double audioBuf[BLOCK_MAX_NUM_SAMPLETUPLES*2];
   int16_t sourceBuf[BLOCK_MAX_NUM_SAMPLETUPLES*2];
   for (int k = 0; k < 10000; k++) {
@@ -469,8 +469,8 @@ int main() {
     sf_close(inputSndFile);
 
     timespec before, after, difference;
-    MoloEncoder encoder;
-    MoloDecoder decoder;
+    MLACEncoder encoder;
+    MLACDecoder decoder;
     int audioBufPos = 0;
     int codedBufPos = 0;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &before);
@@ -527,7 +527,7 @@ int main() {
 
 #endif
 #ifdef DEBUG_TRANSCODE
-  printf("DEBUG_TRANSCODE: MoloEncoder.encode, MoloDecoder.decode (a particularly difficult case)");
+  printf("DEBUG_TRANSCODE: MLACEncoder.encode, MLACDecoder.decode (a particularly difficult case)");
   pass = true;
   int16_t sourceBuf[BLOCK_MAX_NUM_SAMPLETUPLES*2] = {173,7858,145,4119,72,-902,-23,-5643,-112,-8626,-166,-8922,-168,-6438,-117,-1948,-30,3147,65,7263,141,9116,173,8129,151,4610,82,-345,-12,-5193,-103,-8424,-162,-9029,-170,-6822,-125,-2489,-41,2618,55,6911,135,9050,172,8370,156,5083,91,212,-2,-4725,-95,-8190,-158,-9104,-172,-7181,-132,-3021,-51,2079,45,6532,128,8950,171,8580,160,5537,100,769,8,-4238,-86,-7926,-153,-9144,-173,-7513,-139,-3542,-61,1532,35,6129,121,8817,169,8758,164,5971,108,1323,18,-3736,-76,-7632,-148,-9150,-173,-7818,-145,-4050,-71,979,25,5704,113,8652,166,8904,167,6382,116,1872,29,-3220,-67,-7310,-142,-9123,-173,-8093,-150,-4542,-80,423,14,5257,105,8454,163,9016,170,6770,124,2414,39,-2693,-57,-6961,-136,-9061,-173,-8338,-155,-5018,-89,-134,3,4791,96,8224,159,9095,172,7132,131,2948,49,-2155,-47,-6587,-129,-8966,-171,-8553,-160,-5475,-98,-691,-6,4307,87,7965,154,9140,173,7469,138,3470,59,-1609,-36,-6187,-122,-8838,-169,-8735,-164,-5911,-107,-1246,-17,3807,78,7675,149,9152,173,7777,144,3979,69,-1057,-26,-5765,-114,-8677,-166,-8885,-167,-6326,-115,-1796,-27,3293,68,7357,143,9129,173,8056,150,4474,79,-501,-15,-5321,-106,-8483,-163,-9003,-169,-6717,-123,-2339,-38,2767,58,7012};  
   int minPeak = 0;
@@ -541,8 +541,8 @@ int main() {
     }
   }
   printf("Range = %d to %d\n", minPeak, maxPeak);
-  MoloEncoder encoder;
-  MoloDecoder decoder;
+  MLACEncoder encoder;
+  MLACDecoder decoder;
   uint8_t dataBuf[BLOCK_NUM_BYTES];
   uint8_t timeStamp = (int8_t) rand();
   int numSampleTuplesWritten;

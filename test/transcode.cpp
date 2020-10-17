@@ -1,9 +1,9 @@
-// Molo-transcode
+// MLAC-transcode
 //
 // Copyright 2020 Olli Niemitalo (o@iki.fi)
 //
 // Input.wav will be read.
-// Output.molo will be written.
+// Output.mlac will be written.
 // Output.wav will be written.
 //
 // For Emacs: -*- compile-command: "make -C .. transcode" -*-
@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <sndfile.h>
 #include <stdint.h>
-#include "molo-core.hpp"
+#include "mlac-core.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -87,17 +87,17 @@ int main (int argc, char *argv[]) {
     return 1;
   }
   short *outBuf = new short[totalNumSampleTuples*2];
-  uint8_t encodeBuf[MOLO_BLOCK_NUM_BYTES];
-  MoloEncoder moloEncoder;
-  MoloDecoder moloDecoder;
+  uint8_t encodeBuf[MLAC_BLOCK_NUM_BYTES];
+  MLACEncoder mlacEncoder;
+  MLACDecoder mlacDecoder;
 
   double requiredCompressionRate = 1411.2/bitrate_kbps;
-  int requiredNumSampleTuples = ceil(MOLO_BLOCK_NUM_BYTES/4*requiredCompressionRate);
-  if (requiredNumSampleTuples < MOLO_BLOCK_MIN_NUM_SAMPLETUPLES) {
-    requiredNumSampleTuples = MOLO_BLOCK_MIN_NUM_SAMPLETUPLES;
+  int requiredNumSampleTuples = ceil(MLAC_BLOCK_NUM_BYTES/4*requiredCompressionRate);
+  if (requiredNumSampleTuples < MLAC_BLOCK_MIN_NUM_SAMPLETUPLES) {
+    requiredNumSampleTuples = MLAC_BLOCK_MIN_NUM_SAMPLETUPLES;
   }
   if (info) printf("Required number of sample tuples per packet: %d\n", requiredNumSampleTuples);
-  if (requiredNumSampleTuples < MOLO_BLOCK_MAX_NUM_SAMPLETUPLES);
+  if (requiredNumSampleTuples < MLAC_BLOCK_MAX_NUM_SAMPLETUPLES);
   int numLossyBlocks = 0;
   int numBlocks = 0;
   long int bitDepthAccu = 0;
@@ -105,7 +105,7 @@ int main (int argc, char *argv[]) {
   if (info) printf("Latency in sample tuples: %d\n", latencyInSampleTuples);
   int *rateHistory = new int[totalNumSampleTuples + latencyInSampleTuples];
   int j;
-  int lowestRate = 1412*(MOLO_BLOCK_NUM_BYTES/4)/MOLO_BLOCK_MAX_NUM_SAMPLETUPLES;
+  int lowestRate = 1412*(MLAC_BLOCK_NUM_BYTES/4)/MLAC_BLOCK_MAX_NUM_SAMPLETUPLES;
   if (info) printf("Lowest possible rate: %d kbps\n", lowestRate);
   long int rateHistoryAccu = 0;
   for (j = 0; j < latencyInSampleTuples; j++) {
@@ -120,27 +120,27 @@ int main (int argc, char *argv[]) {
       break;
     }
   }
-  char moloFileName[65536];
-  sprintf(moloFileName, "%s_%dkbps.molo", argv[2], bitrate_kbps);
-  std::ofstream moloFile(moloFileName, std::ios::out | std::ios::binary);
+  char mlacFileName[65536];
+  sprintf(mlacFileName, "%s_%dkbps.mlac", argv[2], bitrate_kbps);
+  std::ofstream mlacFile(mlacFileName, std::ios::out | std::ios::binary);
   
-  for (i = 0; i < totalNumSampleTuples - MOLO_BLOCK_MAX_NUM_SAMPLETUPLES;) {    
+  for (i = 0; i < totalNumSampleTuples - MLAC_BLOCK_MAX_NUM_SAMPLETUPLES;) {    
       int numSampleTuplesWritten;
       int numBitsWritten;
-      int forkTopNumSampleTuples = MOLO_BLOCK_MAX_NUM_SAMPLETUPLES;
-      int forkBottomNumSampleTuples = MOLO_BLOCK_MIN_NUM_SAMPLETUPLES;
-      int forkNumSampleTuples = (MOLO_BLOCK_MAX_NUM_SAMPLETUPLES + MOLO_BLOCK_MIN_NUM_SAMPLETUPLES + 1) / 2;
-      int bitDepth = moloEncoder.encode((int16_t *)&inBuf[i*2], encodeBuf, 0, numSampleTuplesWritten, numBitsWritten, requiredNumSampleTuples);
-      moloFile.write((char *)encodeBuf, MOLO_BLOCK_NUM_BYTES);
+      int forkTopNumSampleTuples = MLAC_BLOCK_MAX_NUM_SAMPLETUPLES;
+      int forkBottomNumSampleTuples = MLAC_BLOCK_MIN_NUM_SAMPLETUPLES;
+      int forkNumSampleTuples = (MLAC_BLOCK_MAX_NUM_SAMPLETUPLES + MLAC_BLOCK_MIN_NUM_SAMPLETUPLES + 1) / 2;
+      int bitDepth = mlacEncoder.encode((int16_t *)&inBuf[i*2], encodeBuf, 0, numSampleTuplesWritten, numBitsWritten, requiredNumSampleTuples);
+      mlacFile.write((char *)encodeBuf, MLAC_BLOCK_NUM_BYTES);
       uint8_t compareTimeStamp;
       int compareNumSampleTuples;
-      int trueBitDepth = moloDecoder.decode(encodeBuf, &outBuf[i*2], compareTimeStamp, compareNumSampleTuples);
+      int trueBitDepth = mlacDecoder.decode(encodeBuf, &outBuf[i*2], compareTimeStamp, compareNumSampleTuples);
       if (trueBitDepth != 16) {
 	if (info) printf("lossy %ld %d %d\n", i, trueBitDepth, numSampleTuplesWritten);
       }
       int advancej = j + numSampleTuplesWritten;
       for (;j < advancej; j++) {
-	rateHistory[j] = (int)(1411.2*(MOLO_BLOCK_NUM_BYTES/4)/numSampleTuplesWritten);
+	rateHistory[j] = (int)(1411.2*(MLAC_BLOCK_NUM_BYTES/4)/numSampleTuplesWritten);
 	rateHistoryAccu += rateHistory[j];
 	rateHistoryAccu -= rateHistory[j-latencyInSampleTuples];	
       }
