@@ -1,8 +1,9 @@
-// Molo codec core header-only library.
+// MLAC codec core header-only library.
 //
 // Copyright 2020 Olli Niemitalo (o@iki.fi)
 // 
-// You can use this or the encoder and decoder C header files in your program.
+// You can include this C++ header file in your program, or you can include
+// the encoder and decoder C wrapper header files and compile and link the lib.
 //
 // For Emacs: -*- compile-command: "make -C .. unittest" -*-
 
@@ -11,12 +12,12 @@
 #include <limits.h>
 #include <cstdint>
 #include <math.h>
-#include "molo-constants.h"
+#include "mlac-constants.h"
 
-// Constants that are used in both the encoder and the decoder. Changing these will redefine the compression format. Some come from molo-constants.h.
-const int BLOCK_NUM_BYTES = MOLO_BLOCK_NUM_BYTES; // Number of bytes per block of compressed data
-const int BLOCK_MAX_NUM_SAMPLETUPLES = MOLO_BLOCK_MAX_NUM_SAMPLETUPLES; // Maximum number of sample tuples
-const int BLOCK_MIN_NUM_SAMPLETUPLES = MOLO_BLOCK_MIN_NUM_SAMPLETUPLES; // Minimum number of sample tuples
+// Constants that are used in both the encoder and the decoder. Changing these will redefine the compression format. Some come from mlac-constants.h.
+const int BLOCK_NUM_BYTES = MLAC_BLOCK_NUM_BYTES; // Number of bytes per block of compressed data
+const int BLOCK_MAX_NUM_SAMPLETUPLES = MLAC_BLOCK_MAX_NUM_SAMPLETUPLES; // Maximum number of sample tuples
+const int BLOCK_MIN_NUM_SAMPLETUPLES = MLAC_BLOCK_MIN_NUM_SAMPLETUPLES; // Minimum number of sample tuples
 const int NUM_LP_COEFS = 2; // 
 const int RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER = 7;
 const int NUM_ITERATIONS = 1;
@@ -330,17 +331,6 @@ inline int32_t saturate(int32_t value, int32_t minimum, int32_t maximum) {
   return value;
 }
 
-/* Unused function
-int32_t roundedDiv(int32_t divident, int32_t divisor) {
-  int32_t value = divident / (divisor >> 1);
-  if (value > 0) {
-    return (value >> 1) + (value & 1);
-  } else {
-    return value >> 1;
-  }
-}
-*/
-
 inline int bestExpGolombLikeParameter16(int *bitDepthCounts, int &bestNumBits, int totalCount) {
   int numAboveBase = 0;
   bestNumBits = INT_MAX;
@@ -409,12 +399,12 @@ struct LPCoefs {
   int16_t yd0; // Coef for left channel sample i
 };
 
-class MoloDecoder {
+class MLACDecoder {
   int16_t x[BLOCK_MAX_NUM_SAMPLETUPLES];
   int16_t y[BLOCK_MAX_NUM_SAMPLETUPLES];
 
 public:
-  // molo decode
+  // MLAC decode
   // Arguments:
   //   input = pointer to beginning of a block of BLOCK_NUM_BYTES encoded audio.
   //   output = pointer to beggining of interleaved stereo 16-bit audio that must have room for at least BLOCK_MAX_NUM_SAMPLETUPLES stereo samples to be written.
@@ -502,14 +492,14 @@ public:
   }
 };
 
-class MoloEncoder {
+class MLACEncoder {
   Channel xr;
   Channel ydr;
   int16_t x[BLOCK_MAX_NUM_SAMPLETUPLES];
   int16_t y[BLOCK_MAX_NUM_SAMPLETUPLES];
 
 public:
-  // Molo encode
+  // MLAC encode
   // Arguments:
   //   input = pointer to begining of interleaved stereo 16-bit audio that must contain at least BLOCK_MAX_NUM_SAMPLETUPLES stereo samples.
   //   output = pointer to beginning of a block of encoded audio to be written. Will write BLOCK_NUM_BYTES bytes.
