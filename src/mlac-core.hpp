@@ -1,4 +1,5 @@
-// MLAC codec core header-only library.
+// MLAC codec core header-only library - OPTIMIZED VERSION 1
+// V1: constexpr for compile-time constants
 //
 // Copyright 2020 Olli Niemitalo (o@iki.fi)
 // 
@@ -16,43 +17,43 @@
 #include "mlac-constants.h"
 
 // Constants that are used in both the encoder and the decoder. Changing these will redefine the compression format. Some come from mlac-constants.h.
-const int BLOCK_NUM_BYTES = MLAC_BLOCK_NUM_BYTES; // Number of bytes per block of compressed data
-const int BLOCK_MAX_NUM_SAMPLETUPLES = MLAC_BLOCK_MAX_NUM_SAMPLETUPLES; // Maximum number of sample tuples
-const int BLOCK_MIN_NUM_SAMPLETUPLES = MLAC_BLOCK_MIN_NUM_SAMPLETUPLES; // Minimum number of sample tuples
-const int NUM_LP_COEFS = 2; // 
-const int RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER = 7;
-const int NUM_ITERATIONS = 1;
-const int COEF_DIVISOR = 16;
-const int COEF_SHIFT = 4;
-const int C1_BIAS = 4;
-const int C2_BIAS = -8;
-const int D0_BIAS = 8;
-const int C1_EXPGOLOMBLIKE_PARAMETER = 3;
-const int C2_EXPGOLOMBLIKE_PARAMETER = 3;
-const int D0_EXPGOLOMBLIKE_PARAMETER = 3;
+constexpr int BLOCK_NUM_BYTES = MLAC_BLOCK_NUM_BYTES; // Number of bytes per block of compressed data
+constexpr int BLOCK_MAX_NUM_SAMPLETUPLES = MLAC_BLOCK_MAX_NUM_SAMPLETUPLES; // Maximum number of sample tuples
+constexpr int BLOCK_MIN_NUM_SAMPLETUPLES = MLAC_BLOCK_MIN_NUM_SAMPLETUPLES; // Minimum number of sample tuples
+constexpr int NUM_LP_COEFS = 2; // 
+constexpr int RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER = 7;
+constexpr int NUM_ITERATIONS = 1;
+constexpr int COEF_DIVISOR = 16;
+constexpr int COEF_SHIFT = 4;
+constexpr int C1_BIAS = 4;
+constexpr int C2_BIAS = -8;
+constexpr int D0_BIAS = 8;
+constexpr int C1_EXPGOLOMBLIKE_PARAMETER = 3;
+constexpr int C2_EXPGOLOMBLIKE_PARAMETER = 3;
+constexpr int D0_EXPGOLOMBLIKE_PARAMETER = 3;
 // *** Exp-Golomb-like code parameter value 3 enables integer coefficient values in range -4096..4095 with the current implementation of reader and writer.
-const int C1_MIN = -4096;
-const int C1_MAX = 4095;
-const int C2_MIN = -4096;
-const int C2_MAX = 4095;
-const int D0_MIN = -4096;
-const int D0_MAX = 4095;
+constexpr int C1_MIN = -4096;
+constexpr int C1_MAX = 4095;
+constexpr int C2_MIN = -4096;
+constexpr int C2_MAX = 4095;
+constexpr int D0_MIN = -4096;
+constexpr int D0_MAX = 4095;
 
 // Channel modes
 // Left channel is independently coded. Right channel is coded as dependent on the left channel
-const int CHMODE_INDEPENDENT_AND_DEPENDENT = 0;
+constexpr int CHMODE_INDEPENDENT_AND_DEPENDENT = 0;
 // The left and right channel are coded independently. Lossy coding of the MSBs only or PCM coding if all bits are included,
-const int CHMODE_MSB = 1;
+constexpr int CHMODE_MSB = 1;
 
 // Base bit depths: Exp-Golomb-like code in reverse order:
 //const int bitDepths = {15, 14, 13, 12, 11, 10, 9, 8, 7}
-const int residualExpGolombLikeParameterEncodingNumBits[9] = {8, 8, 7, 6, 5, 4, 3, 2, 1};
-const int residualExpGolombLikeParameterEncodings[9] = {0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; // 00000000, 00000001, 0000001, 000001, 00001, 0001, 001, 01, 1
+constexpr int residualExpGolombLikeParameterEncodingNumBits[9] = {8, 8, 7, 6, 5, 4, 3, 2, 1};
+constexpr int residualExpGolombLikeParameterEncodings[9] = {0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; // 00000000, 00000001, 0000001, 000001, 00001, 0001, 001, 01, 1
 
-const int chModeMSBNumSampleTuples[17] = {0, 0, 0, 0, 0, 0, 0, 0, (BLOCK_NUM_BYTES*8-8-2-4)/(2*8), (BLOCK_NUM_BYTES*8-8-2-4)/(2*9), (BLOCK_NUM_BYTES*8-8-2-4)/(2*10), (BLOCK_NUM_BYTES*8-8-2-4)/(2*11), (BLOCK_NUM_BYTES*8-8-2-4)/(2*12), (BLOCK_NUM_BYTES*8-8-2-4)/(2*13), (BLOCK_NUM_BYTES*8-8-2-4)/(2*14), (BLOCK_NUM_BYTES*8-8-2-4)/(2*15),(BLOCK_NUM_BYTES*8-8-2-4)/(2*16)};
-const int TRUE_BITDEPTH_BIAS = 1;
+constexpr int chModeMSBNumSampleTuples[17] = {0, 0, 0, 0, 0, 0, 0, 0, (BLOCK_NUM_BYTES*8-8-2-4)/(2*8), (BLOCK_NUM_BYTES*8-8-2-4)/(2*9), (BLOCK_NUM_BYTES*8-8-2-4)/(2*10), (BLOCK_NUM_BYTES*8-8-2-4)/(2*11), (BLOCK_NUM_BYTES*8-8-2-4)/(2*12), (BLOCK_NUM_BYTES*8-8-2-4)/(2*13), (BLOCK_NUM_BYTES*8-8-2-4)/(2*14), (BLOCK_NUM_BYTES*8-8-2-4)/(2*15),(BLOCK_NUM_BYTES*8-8-2-4)/(2*16)};
+constexpr int TRUE_BITDEPTH_BIAS = 1;
 
-const uint32_t bitMasks[17] = {0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff, 0x1ff, 0x3ff, 0x7ff, 0xfff, 0x1fff, 0x3fff, 0x7fff, 0xffff};
+constexpr uint32_t bitMasks[17] = {0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff, 0x1ff, 0x3ff, 0x7ff, 0xfff, 0x1fff, 0x3fff, 0x7fff, 0xffff};
 
 /* Unused function
 double saturate(double value, double minimum, double maximum) {
