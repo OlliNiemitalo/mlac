@@ -12,6 +12,7 @@
 #include <limits.h>
 #include <cstdint>
 #include <math.h>
+#include <bit>
 #include "mlac-constants.h"
 
 // Constants that are used in both the encoder and the decoder. Changing these will redefine the compression format. Some come from mlac-constants.h.
@@ -77,29 +78,15 @@ double saturate(double value, double minimum, double maximum) {
 // -128 .. 127 return 8;
 // -256 .. 255 return 9;
 inline int bitDepth16 (int16_t value16, int minBitDepth) {
-#ifdef __ARM_FEATURE_CLZ
-  // Alternative implementation but this is slower by about 5 %
-  //  int bitDepth = 32 - __builtin_clrsb((uint32_t) value16);
-  //  return (bitDepth < minBitDepth) ? minBitDepth : bitDepth;  
   int32_t value32 = value16;
   if (value32 < 0) {
     value32 = value32 ^ 0xffffffff;
   }
-  int bitDepth = 33 - __builtin_clz((uint32_t)value32); // Count leading zeros
+  int bitDepth = 33 - std::countl_zero((uint32_t)value32); // Count leading zeros
   if (bitDepth < minBitDepth) {
     return minBitDepth;
   }  
   return bitDepth;
-#else // __ARM_FEATURE_CLZ
-  int16_t sign = value16 & 0x8000;
-  for (int bitDepth = 16; bitDepth >= minBitDepth; bitDepth--) {
-    value16 <<= 1;
-    if ((int16_t)(value16 & 0x8000) != sign) {
-      return bitDepth;
-    }
-  }
-  return minBitDepth;
-#endif // __ARM_FEATURE_CLZ  
 }
 
 // It is OK if bitDepth is less than expGolombLikeParameter
@@ -296,8 +283,7 @@ public:
       }
     }
     bitBuf <<= 16 + (numBitsRead & 7);
-#ifdef __ARM_FEATURE_CLZ
-    expGolombLikeParameter = __builtin_clz((uint32_t)bitBuf); // Count leading zeros
+    expGolombLikeParameter = std::countl_zero((uint32_t)bitBuf); // Count leading zeros
     if (expGolombLikeParameter >= 8) {
       expGolombLikeParameter = RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER;
       numBitsRead += residualExpGolombLikeParameterEncodingNumBits[0];
@@ -305,16 +291,6 @@ public:
       numBitsRead += residualExpGolombLikeParameterEncodingNumBits[8 - expGolombLikeParameter];
       expGolombLikeParameter = RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER + (8 - expGolombLikeParameter);
     }
-#else // __ARM_FEATURE_CLZ
-    for (expGolombLikeParameter = RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER + 8; expGolombLikeParameter > RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER; expGolombLikeParameter--) {
-      if ((bitBuf & 0x80000000)) {
-        numBitsRead += residualExpGolombLikeParameterEncodingNumBits[expGolombLikeParameter-RESIDUAL_EXPGOLOMBLIKE_MIN_PARAMETER];
-        return;
-      }
-      bitBuf <<= 1;
-    }
-    numBitsRead += residualExpGolombLikeParameterEncodingNumBits[0];
-#endif // __ARM_FEATURE_CLZ
     return;
   }
   
