@@ -348,7 +348,7 @@ inline int16_t predict(int16_t xm2, int16_t xc2, int16_t xm1, int16_t xc1) {
   //#else  // __ARM_FEATURE_SAT
   return (int16_t)saturate(result, -0x8000, 0x7fff);
   //#endif // __ARM_FEATURE_SAT
-  //return saturate(round(xm2*(float)xc2*(1.0f/COEF_DIVISOR) + xm1*(float)xc1*(1.0f/COEF_DIVISOR)), -32768.0f, 32767.0f); // Equivalent floating point calculation
+  //return saturate(roundf(xm2*(float)xc2*(1.0f/COEF_DIVISOR) + xm1*(float)xc1*(1.0f/COEF_DIVISOR)), -32768.0f, 32767.0f); // Equivalent floating point calculation
 }
 
 inline int16_t predict(int16_t ym2, int16_t yc2, int16_t ym1, int16_t yc1, int16_t x0, int16_t yd0) {
@@ -363,7 +363,7 @@ inline int16_t predict(int16_t ym2, int16_t yc2, int16_t ym1, int16_t yc1, int16
   //return result;
   return (int16_t)saturate(result, -0x8000, 0x7fff);
   //#endif // __ARM_FEATURE_SAT
-  //  return saturate(round(ym2*(float)yc2*(1.0f/COEF_DIVISOR) + ym1*(float)yc1*(1.0f/COEF_DIVISOR) + x0*(float)yd0*(1.0f/COEF_DIVISOR)), -32768.0f, 32767.0f); // Equivalent floating point calculation
+  //  return saturate(roundf(ym2*(float)yc2*(1.0f/COEF_DIVISOR) + ym1*(float)yc1*(1.0f/COEF_DIVISOR) + x0*(float)yd0*(1.0f/COEF_DIVISOR)), -32768.0f, 32767.0f); // Equivalent floating point calculation
 }
 
 struct LPCoefs {
@@ -627,8 +627,8 @@ public:
       }
       //      float dev_xc1f = x0x1/(float)x0x0;
       //      printf("%f,%f,%f,", xc1f, xc2f, dev_xc1f);
-      c.xc1 = saturate((int)round(xc1f*COEF_DIVISOR), C1_MIN + C1_BIAS, C1_MAX + C1_BIAS);
-      c.xc2 = saturate((int)round(xc2f*COEF_DIVISOR), C2_MIN + C2_BIAS, C2_MAX + C2_BIAS);
+      c.xc1 = saturate((int)roundf(xc1f*COEF_DIVISOR), C1_MIN + C1_BIAS, C1_MAX + C1_BIAS);
+      c.xc2 = saturate((int)roundf(xc2f*COEF_DIVISOR), C2_MIN + C2_BIAS, C2_MAX + C2_BIAS);
       float ydivisor = 2.0f*y0y1*y0x2*y1x2 - (float)y0y1*y0y1*x2x2 + (float)y0y0*y1y1*x2x2 - (float)y0y0*y1x2*y1x2 - (float)y0x2*y0x2*y1y1;
       float yc1f, yc2f, yd0f;
       if (ydivisor == 0) {
@@ -641,9 +641,9 @@ public:
 	yc2f = ((float)y0y2*y1y1*x2x2 - (float)y0y2*y1x2*y1x2 - (float)y0y1*y1y2*x2x2 + (float)y0y1*y1x2*x2y2 - (float)y0x2*y1y1*x2y2 + (float)y0x2*y1y2*y1x2)*ydInvDivisor;
 	yd0f = ((float)y0y0*y1y1*x2y2 - (float)y0y0*y1y2*y1x2 - (float)y0y1*y0y1*x2y2 + (float)y0y1*y0y2*y1x2 + (float)y0y1*y0x2*y1y2 - (float)y0y2*y0x2*y1y1)*ydInvDivisor;
       }
-      c.yc1 = saturate((int)round(yc1f*COEF_DIVISOR), C1_MIN + C1_BIAS, C1_MAX + C1_BIAS);
-      c.yc2 = saturate((int)round(yc2f*COEF_DIVISOR), C2_MIN + C2_BIAS, C2_MAX + C2_BIAS);
-      c.yd0 = saturate((int)round(yd0f*COEF_DIVISOR), D0_MIN + D0_BIAS, D0_MAX + D0_BIAS);
+      c.yc1 = saturate((int)roundf(yc1f*COEF_DIVISOR), C1_MIN + C1_BIAS, C1_MAX + C1_BIAS);
+      c.yc2 = saturate((int)roundf(yc2f*COEF_DIVISOR), C2_MIN + C2_BIAS, C2_MAX + C2_BIAS);
+      c.yd0 = saturate((int)roundf(yd0f*COEF_DIVISOR), D0_MIN + D0_BIAS, D0_MAX + D0_BIAS);
  
       // Do linear prediction with the new coefficients
      
